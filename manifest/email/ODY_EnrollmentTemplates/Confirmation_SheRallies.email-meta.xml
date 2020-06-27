@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>we are sending this Course Category is SheRallies</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Confirmation SheRallies</name>
+    <style>none</style>
+    <subject>LTA_Training_Confirmation_SheRallies</subject>
+    <textOnly>$title
+
+Coach Login:
+
+{!ODY_Enrollment__c.Contact_loginName__c}
+
+Coach Code:
+
+{!ODY_Enrollment__c.Contact_Coach_Code__c}
+
+Dear {!ODY_Enrollment__c.Contact_Name__c},
+
+
+
+Thank you for booking onto the upcoming She Rallies training. We are really excited to have you on board and look forward to welcoming you to the training so that you can start delivering tennis. Please see below for details about the training :-
+
+
+- Date :{!ODY_Class__c.Start_Date__c}
+
+- Time :{!ODY_Class__c.Start_Time__c}
+
+- Location :{!ODY_Class__c.Venue_Name__c},[LTA Venue Street Address],[LTA Venue Address Line 2],[LTA Venue Post Code],[LTA Venue County]
+
+If you have any questions prior to the training, please get in touch with your She Rallies Ambassador.We hope you enjoy the day!
+
+
+Kind Regards,
+LTA Participation Team
+
+Contact Us
+
+Privacy Policy
+
+Company Registration Number: 7459469
+
+Country of Registration: United Kingdom
+
+
+Registered Office Address: LTA, National Tennis Centre, 100 Priory Lane, Roehampton, London, SW15 5JQ</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
