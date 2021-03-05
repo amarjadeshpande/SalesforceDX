@@ -1,0 +1,80 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - README.md
+      - azure-pipelines.yml
+pr:
+  autoCancel: "true"
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - README.md
+jobs:
+- job: ProdDeploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  steps:
+    - task: UseNode@1
+    - bash: 
+        npm install sfdx-cli --global
+      displayName: Install Salesforce CLI
+    - bash: 
+        sfdx force:auth:web:login --setalias apd --username $(salesforceProdUsername) --instanceurl $(salesforceProdInstanceUrl)
+      displayName: Authorize salesforce org
+    - bash: 
+        sfdx force:source:convert -d ./src
+      displayName: Convert to deploy source
+    - bash: 
+        sfdx force:mdapi:deploy -l RunLocalTests -c -d ./src -u prod -w 10
+      displayName: Run validation on source code
+    - bash: 
+        sfdx force:mdapi:deploy -d ./src -u prod -w 10
+      displayName: Deploy source code to Production
+- job: UATDeploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+  steps:
+    - task: UseNode@1
+    - bash: 
+        npm install sfdx-cli --global
+      displayName: Install Salesforce CLI
+    - bash: 
+        sfdx force:auth:jwt:grant --clientid $(salesforceUATClientid) --jwtkeyfile ./buildfiles/server.key --username $(salesforceUATUsername) --instanceurl $(salesforceUATInstanceurl) -a uat
+      displayName: Authorize salesforce org
+    - bash: 
+        sfdx force:source:convert -d ./src
+      displayName: Convert to deploy source
+    - bash: 
+        sfdx force:mdapi:deploy -l RunLocalTests -c -d ./src -u uat -w 10
+      displayName: Run validation on source code
+    - bash: 
+        sfdx force:mdapi:deploy -d ./src -u uat -w 10
+      displayName: Deploy source code to UAT
+- job: QADeploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/qa'))
+  steps:
+    - task: UseNode@1
+    - bash: 
+        npm install sfdx-cli --global
+      displayName: Install Salesforce CLI
+    - bash: 
+        sfdx force:auth:jwt:grant --clientid $(salesforceQAclientid) --jwtkeyfile ./buildfiles/server.key --username $(salesforceQAusername) --instanceurl $(salesforceQAinstanceurl) -a qa
+      displayName: Authorize salesforce org
+    - bash: 
+        sfdx force:source:convert -d ./src
+      displayName: Convert to deploy source
+    - bash: 
+        sfdx force:mdapi:deploy -l RunLocalTests -c -d ./src -u qa -w 10
+      displayName: Run validation on source code to QA
+    - bash: 
+        sfdx force:mdapi:deploy -d ./src -u qa -w 10
+      displayName: Deploy source code
